@@ -1,5 +1,17 @@
+# --- Existing Content ---
 *.log
 *.csv
 .env
 .env.local
-__pycache__/cd
+__pycache__/
+
+# --- New PyInstaller & Executables ---
+build/
+dist/
+*.spec
+*.exe
+
+# --- Additional Cleanup ---
+.venv
+env/
+cd

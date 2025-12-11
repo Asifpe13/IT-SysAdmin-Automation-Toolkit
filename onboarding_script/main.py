@@ -3,13 +3,13 @@ import os
 import logging
 from datetime import datetime
 
-# --- Configuration ---
-# In a real environment, this would be a network path like r"\\FileServer\Users"
+# --- Configuration ---  # הגדרות כלליות
+# In a real environment, this would be a network path like r"\\FileServer\Users"  # בסביבה אמיתית זה היה נתיב רשת, כאן זה תיקייה מקומית לדוגמה
 BASE_DIR = "company_data" 
 LOG_FILE = "onboarding_log.log"
 INPUT_FILE = "employees.csv"
 
-# Setup Logging
+# Setup Logging  # הגדרת מנגנון לוגים לקובץ
 logging.basicConfig(
     filename=LOG_FILE,
     level=logging.INFO,
@@ -20,15 +20,16 @@ logging.basicConfig(
 def setup_user_environment(name, employee_id, department):
     """
     Creates a user folder and simulates permission assignment based on department.
+    יוצרת תיקיית משתמש ומדמה הרשאות לפי מחלקה.
     """
-    # Sanitize folder name (remove spaces, handle special chars)
+    # Sanitize folder name (remove spaces, handle special chars)  # ניקוי שם תיקייה מרווחים/תווים מיוחדים
     safe_folder_name = f"{name.replace(' ', '_')}_{employee_id}"
     user_path = os.path.join(BASE_DIR, "users", safe_folder_name)
     
     print(f"\n[PROCESSING] User: {name} | Dept: {department}")
 
     try:
-        # 1. Create User Directory
+        # 1. Create User Directory  # יצירת תיקיית משתמש אם לא קיימת
         if not os.path.exists(user_path):
             os.makedirs(user_path)
             logging.info(f"Created directory: {user_path}")
@@ -37,7 +38,7 @@ def setup_user_environment(name, employee_id, department):
             logging.warning(f"Directory already exists: {user_path}")
             print(f"   [SKIP] Folder already exists.")
 
-        # 2. Generate 'Welcome' File
+        # 2. Generate 'Welcome' File  # כתיבת קובץ Welcome אישי בתיקייה
         welcome_file = os.path.join(user_path, "welcome.txt")
         with open(welcome_file, "w", encoding='utf-8') as f:
             f.write(f"Hello {name},\n")
@@ -47,25 +48,25 @@ def setup_user_environment(name, employee_id, department):
         
         logging.info(f"Generated welcome file for {name}")
 
-        # 3. Simulate Permissions (ACLs) - The "Enterprise" Logic
-        # Instead of running real 'icacls' commands (which only work on Windows Server),
-        # we print the commands to simulate the automation.
+        # 3. Simulate Permissions (ACLs) - The "Enterprise" Logic  # סימולציית פקודות הרשאות כמו בארגון
+        # Instead of running real 'icacls' commands (which only work on Windows Server),  # במקום להריץ icacls אמיתי (שרת Windows)
+        # we print the commands to simulate the automation.  # מדפיסים את הפקודות לצורך הדגמה בלבד
         
         permission_cmd = ""
         
         if department.lower() == "finance":
-            # Finance gets specific restrictive access
+            # Finance gets specific restrictive access  # מחלקת כספים מקבלת גישה מצומצמת
             permission_cmd = f'icacls "{user_path}" /grant "Finance_Group":(OI)(CI)F'
         
         elif department.lower() == "devops" or department.lower() == "it":
-            # DevOps gets Admin-like access
+            # DevOps gets Admin-like access  # DevOps/IT מקבלים הרשאות מלאות
             permission_cmd = f'icacls "{user_path}" /grant "DevOps_Admins":(OI)(CI)F /grant "{name}":F'
         
         else:
-            # General employees just get access to their own folder
+            # General employees just get access to their own folder  # שאר העובדים מקבלים גישה לתיקייה האישית בלבד
             permission_cmd = f'icacls "{user_path}" /grant "{name}":(OI)(CI)M'
 
-        # Log and Print the simulated system command
+        # Log and Print the simulated system command  # מתעדים ומדפיסים את הפקודה הסימולטיבית
         print(f"   [SYSTEM EXEC] {permission_cmd}")
         logging.info(f"Applied permissions: {department} policy")
 
@@ -77,7 +78,7 @@ def setup_user_environment(name, employee_id, department):
 def main():
     print("--- STARTING AUTOMATED ONBOARDING ---")
     
-    # Check if CSV exists
+    # Check if CSV exists  # בדיקה שהקובץ הראשי של העובדים קיים
     if not os.path.exists(INPUT_FILE):
         print(f"[CRITICAL] Input file '{INPUT_FILE}' not found!")
         return
@@ -87,7 +88,7 @@ def main():
             reader = csv.DictReader(csvfile)
             
             for row in reader:
-                # Clean up data (strip whitespace)
+                # Clean up data (strip whitespace)  # ניקוי רווחים כדי למנוע תקלות בשם/מחלקה/ת"ז
                 name = row['Name'].strip()
                 emp_id = row['ID'].strip()
                 dept = row['Department'].strip()
